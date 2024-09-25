@@ -7,6 +7,8 @@
 - gosec检查失败, 检测到*个error;
 - golangci-lint检查失败, 检测到*个error;
 - shellcheck检查失败, 检测到*个error;
+- DBus参数检查失败, 检测到*个接口调用不通过
+- 敏感词检查失败, 检测到*个文件存在敏感词
 
 ### cppcheck检查失败, 检测到*个error
 使用静态代码检查工具cppcheck对PR中的文件(*.cpp, *.cxx, *.cc, *.c++, *.c, *.ipp,
@@ -166,5 +168,62 @@ Details:        audioController       *AudioController]]></failure>
 </details>
 
 表示shellcheck检测到当前PR存在1个error级别的告警，详情是检查日志，其中`<file name='test.sh' >`字段获取存在告警信息的文件路径`severity='error`字段表示告警级别，`message=`字段获得具体告警信息，`source=`字段获取告警信息告警编码。
+
+当遇到该提示信息，请根据实际情况酌情更正。
+
+### DBus参数检查失败, 检测到*个接口调用不通过
+用于检查D-Bus参数是否符合规范的Python实现。它能够检查参数的类型、数量和顺序是否正确，并提供详细的错误信息。
+
+例如评论中显示:
+> [!Note]
+> [静态代码检查]
+* DBus参数检查失败, 检测到1个接口调用不通过;
+<details>
+<summary>详情</summary>
+
+```ruby
+2024-09-24 17:45:06,050 - INFO - 开始检测...
+2024-09-24 17:45:06,052 - INFO - 检测到项目语言类型为: go
+2024-09-24 17:45:06,153 - INFO - 项目:sourceCode，扫描完成，结果如下:
+2024-09-24 17:45:06,153 - WARNING - 检查不通过!发现不安全调用
+2024-09-24 17:45:06,153 - INFO - 检测项目:test/dbus-test
+扫描结果:{'dbus_method_count': 42, 'unsafe_call_count': 1, 'scan_result': 'unpassed'}
+2024-09-24 17:45:06,153 - INFO - Go D-Bus 检查完成！
+2024-09-24 17:45:06,528 - INFO - DBUS扫描结果发送成功!
+2024-09-24 17:45:07,911 - INFO - 系统调用结果请求成功! 函数名：runALSARestore
+2024-09-24 17:45:09,108 - INFO - 系统调用结果请求完成!
+```
+</details>
+
+表示检测到当前PR存在1个不安全调用，详情是检查日志，`dbus_method_count`字段表示检测总数，`unsafe_call_count`字段表示不安全检测数，`scan_result`字段表示此次检测结果，`函数名：runALSARestore`表示存在不安全检测的函数名。
+
+当遇到该提示信息，请根据实际情况酌情更正。
+
+
+### 敏感词检查失败, 检测到*个文件存在敏感词
+应产品要求，需要在代码侧进行敏感词检查，对[deepsecrets](https://github.com/ntoskernel/deepsecrets)进行二次开发后对PR中的文件进行敏感词检查。
+
+例如评论中显示:
+> [!Note]
+> [静态代码检查]
+* 敏感词检查失败, 检测到1个文件存在敏感词
+<details>
+<summary>详情</summary>
+
+```json
+{
+    "/root/work/demo_test/sourceCode/base_64.py": [
+        {
+            "line": "    print(\"台独\")",
+            "line_number": 42,
+            "rule": "C01",
+            "reason": "政治敏感词 | f5c6edc233",
+        }
+    ]
+}
+```
+</details>
+
+表示当前PR有1个文件检测到存在敏感词，详情是检查结果日志，其中键值`base_64.py`对应存在敏感词的文件名，`line_number`字段获取存在敏感词的行编号，`reason`字段说明敏感词被检测的原因。
 
 当遇到该提示信息，请根据实际情况酌情更正。
